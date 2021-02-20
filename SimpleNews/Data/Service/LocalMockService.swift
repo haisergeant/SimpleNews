@@ -26,7 +26,7 @@ struct LocalMockEndpoints {
 }
 
 class LocalMockService: WebService {
-    func requestNews(completionHandler: ((Result<Feed, Error>) -> Void)) {
+    func requestNews(forceLoad: Bool, completionHandler: ((Result<Feed, Error>) -> Void)) {
         
     }
 }

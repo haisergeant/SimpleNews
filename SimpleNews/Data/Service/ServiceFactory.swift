@@ -25,5 +25,5 @@ struct ServiceFactory {
 }
 
 protocol WebService {
-    func requestNews(completionHandler: @escaping ((Result<Feed, Error>) -> Void))
+    func requestNews(forceLoad: Bool, completionHandler: @escaping ((Result<Feed, Error>) -> Void))
 }

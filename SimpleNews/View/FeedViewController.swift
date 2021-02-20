@@ -12,6 +12,10 @@ protocol FeedViewProtocol: class, BaseViewProtocol {
     
 }
 
+protocol FeedViewControllerDelegate: class {
+    func feedViewController(_ controller: FeedViewController, didSelect object: Any)
+}
+
 final class FeedViewController: UIViewController {
     private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
@@ -35,6 +39,8 @@ final class FeedViewController: UIViewController {
     }()
     
     private let viewModel: FeedViewModelProtocol
+    weak var delegate: FeedViewControllerDelegate?
+    
     private lazy var tempCell = ContentCell()
     
     init(viewModel: FeedViewModelProtocol) {
@@ -42,7 +48,7 @@ final class FeedViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         viewModel.bind(to: self)
-        viewModel.requestData()
+        refreshData(forceLoad: true)
     }
     
     required init?(coder: NSCoder) {
@@ -61,6 +67,19 @@ final class FeedViewController: UIViewController {
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(pullRefreshData), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+    
+    @objc private func pullRefreshData() {
+        refreshData(forceLoad: true)
+    }
+    
+    private func refreshData(forceLoad: Bool) {
+        collectionView.refreshControl?.beginRefreshing()
+        viewModel.requestData(forceLoad: forceLoad)
     }
 }
 
@@ -85,7 +104,8 @@ extension FeedViewController: UICollectionViewDataSource {
 
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        guard let article = viewModel.model(at: indexPath.row) else { return }
+        delegate?.feedViewController(self, didSelect: article)
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -106,10 +126,15 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
 
 extension FeedViewController: FeedViewProtocol {
     func configure(with viewModel: BaseViewModelProtocol) {
+        collectionView.refreshControl?.endRefreshing()
         collectionView.reloadData()
     }
     
     func handleError(_ error: Error) {
-        
+        collectionView.refreshControl?.endRefreshing()
+        showAlert(title: "Error",
+                  message: (error as? ErrorDisplayable)?.errorMessage ?? error.localizedDescription,
+                  primaryButtonTitle: "OK",
+                  primaryAction: {})
     }
 }

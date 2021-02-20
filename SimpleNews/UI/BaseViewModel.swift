@@ -19,7 +19,7 @@ protocol ViewConfigurable {
  */
 protocol BaseViewModelProtocol {
     func bind(to view: BaseViewProtocol)
-    func requestData()
+    func requestData(forceLoad: Bool)
 }
 
 protocol BaseViewProtocol {

@@ -36,14 +36,15 @@ class NewsService: WebService {
         self.session = session
     }
     
-    func requestNews(completionHandler: @escaping ((Result<Feed, Error>) -> Void)) {
+    func requestNews(forceLoad: Bool, completionHandler: @escaping ((Result<Feed, Error>) -> Void)) {
         guard let url = endPoint.url(for: .home) else {
             completionHandler(.failure(APIError.invalidAPIError))
             return
         }
         
         let operation = JSONDataRequestOperation<Feed>(url: url,
-                                                       urlSession: session)
+                                                       urlSession: session,
+                                                       forceLoad: forceLoad)
         operation.completionHandler = { result in
             DispatchQueue.main.async {
                 switch result {

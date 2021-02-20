@@ -9,6 +9,7 @@ import Foundation
 
 protocol FeedViewModelProtocol: BaseViewModelProtocol {
     func numberOfRows() -> Int
+    func model(at index: Int) -> Any?
     func cellViewModel(at index: Int) -> BaseViewModel?
     func requestDataForCellIfNeeded(at index: Int)
     func stopRequestDataForCell(at index: Int)
@@ -26,7 +27,7 @@ class FeedViewModel {
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "dd MMM, yyyy"
+        formatter.dateFormat = "dd MMM, yyyy HH:mm"
         return formatter
     }()
     
@@ -42,13 +43,14 @@ extension FeedViewModel: FeedViewModelProtocol {
         self.view = view
     }
     
-    func requestData() {
-        service.requestNews { [weak self] result in
+    func requestData(forceLoad: Bool) {
+        service.requestNews(forceLoad: forceLoad) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let feed):
-                self.rowItems = feed.assets
-                self.viewModels = self.rowItems.compactMap { item -> ContentCellViewModel in
+                self.rowItems = feed.assets.sorted(by: {  $0.timeStamp > $1.timeStamp })
+                self.viewModels.removeAll()
+                self.rowItems.forEach { item in
                     
                     let minSizeImage = item.relatedImages.min { (image1, image2) -> Bool in
                         image1.height * image1.width < image2.height * image2.width
@@ -56,11 +58,11 @@ extension FeedViewModel: FeedViewModelProtocol {
                     
                     self.articleImages.append(minSizeImage)
                     
-                    return ContentCellViewModel(imageState: Observable<ImageState>(minSizeImage != nil ? .loading : .none),
-                                                topTitle: item.headline,
-                                                title: item.theAbstract,
-                                                subtitle: item.byLine,
-                                                dateString: self.dateFormatter.string(from: Date(timeIntervalSince1970: item.timeStamp)))
+                    self.viewModels.append(ContentCellViewModel(imageState: Observable<ImageState>(minSizeImage != nil ? .loading : .none),
+                                                           topTitle: item.headline,
+                                                           title: item.theAbstract,
+                                                           subtitle: item.byLine,
+                                                           dateString: self.dateFormatter.string(from: Date(timeIntervalSince1970: item.timeStamp / 1000))))
                 }
                 DispatchQueue.main.async {                    
                     self.view?.configure(with: self)
@@ -77,6 +79,10 @@ extension FeedViewModel: FeedViewModelProtocol {
         viewModels.count
     }
     
+    func model(at index: Int) -> Any? {
+        rowItems[safe: index]
+    }
+    
     func cellViewModel(at index: Int) -> BaseViewModel? {
         viewModels[safe: index]
     }
@@ -85,14 +91,19 @@ extension FeedViewModel: FeedViewModelProtocol {
         guard let imageObject = articleImages[safe: index],
               let object = imageObject,
               let url = URL(string: object.url),
-              let cellViewModel = viewModels[safe: index],
-              cellViewModel.imageState.value == .loading else { return }
-        imageService.downloadImage(at: url) { result in
-            switch result {
-            case .success(let image):
-                cellViewModel.imageState.value = .loadedImage(image: image)
-            case .failure(_):
-                cellViewModel.imageState.value = .fail
+              let cellViewModel = viewModels[safe: index] else { return }
+        if cellViewModel.imageState.value == .fail {
+            cellViewModel.imageState.value = .loading
+        }        
+        
+        if cellViewModel.imageState.value == .loading {
+            imageService.downloadImage(at: url) { result in
+                switch result {
+                case .success(let image):
+                    cellViewModel.imageState.value = .loadedImage(image: image)
+                case .failure(_):
+                    cellViewModel.imageState.value = .fail
+                }
             }
         }
     }
