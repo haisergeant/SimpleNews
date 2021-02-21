@@ -26,7 +26,31 @@ struct LocalMockEndpoints {
 }
 
 class LocalMockService: WebService {
-    func requestNews(forceLoad: Bool, completionHandler: ((Result<Feed, Error>) -> Void)) {
+    private let queueManager: QueueManager
+    private let session: URLSessionProtocol
+    private var currentOperation: Operation? = nil
+    private let endPoint = LocalMockEndpoints()
+    
+    init(queueManager: QueueManager = .shared,
+         session: URLSessionProtocol = URLSession.shared) {
+        self.queueManager = queueManager
+        self.session = session
+    }
+    
+    func requestNews(forceLoad: Bool, completionHandler: @escaping ((Result<Feed, Error>) -> Void)) {
+        guard let url = endPoint.fileName(for: .home) else {
+            completionHandler(.failure(APIError.invalidAPIError))
+            return
+        }
+        
+        let operation = JSONDataRequestOperation<Feed>(url: url,
+                                                       urlSession: session,
+                                                       cacheService: nil)
+        operation.completionHandler = { result in
+            completionHandler(result)
+        }
+        
+        queueManager.queue(operation)
         
     }
 }

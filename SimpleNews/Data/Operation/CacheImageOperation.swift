@@ -23,7 +23,7 @@ final class CacheImageOperation: BaseOperation<UIImage> {
     
     override func main() {
         if let cacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first {
-            let fileName = CacheImageOperation.fileName(for: url.absoluteString) ?? url.lastPathComponent
+            let fileName = FileNameHelper.fileName(for: url.absoluteString) ?? url.lastPathComponent
             
             let downloadDirectory = cacheDirectory + "/" + "Download"
             if !fileManager.fileExists(atPath: downloadDirectory) {
@@ -63,6 +63,15 @@ final class CacheImageOperation: BaseOperation<UIImage> {
         }
     }
     
+    
+    
+    override func cancel() {
+        dataTask?.cancel()
+        super.cancel()
+    }
+}
+
+struct FileNameHelper {
     static func fileName(for word: String) -> String? {
         let characters = Array(word)
         let encodedArray = characters.map { (c: Character) -> String in
@@ -84,10 +93,5 @@ final class CacheImageOperation: BaseOperation<UIImage> {
             return nil
         }
         return encodedArray.joined()
-    }
-    
-    override func cancel() {
-        dataTask?.cancel()
-        super.cancel()
     }
 }

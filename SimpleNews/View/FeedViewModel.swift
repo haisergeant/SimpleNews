@@ -59,10 +59,10 @@ extension FeedViewModel: FeedViewModelProtocol {
                     self.articleImages.append(minSizeImage)
                     
                     self.viewModels.append(ContentCellViewModel(imageState: Observable<ImageState>(minSizeImage != nil ? .loading : .none),
-                                                           topTitle: item.headline,
-                                                           title: item.theAbstract,
-                                                           subtitle: item.byLine,
-                                                           dateString: self.dateFormatter.string(from: Date(timeIntervalSince1970: item.timeStamp / 1000))))
+                                                                topTitle: item.headline,
+                                                                title: item.theAbstract,
+                                                                subtitle: item.byLine,
+                                                                dateString: self.dateFormatter.string(from: Date(timeIntervalSince1970: item.timeStamp / 1000))))
                 }
                 DispatchQueue.main.async {                    
                     self.view?.configure(with: self)
