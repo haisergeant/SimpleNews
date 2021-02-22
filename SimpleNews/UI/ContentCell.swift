@@ -23,6 +23,7 @@ final class ContentCell: UICollectionViewCell, Reuseable, ViewConfigurable {
     private let separator = UIView()
     
     private weak var viewModel: ContentCellViewModel?
+    private var shouldAnimate = true
     
     private enum Constant {
         static let separatorHeight: CGFloat = 0.5
@@ -103,24 +104,38 @@ final class ContentCell: UICollectionViewCell, Reuseable, ViewConfigurable {
             separator.widthAnchor.constraint(equalTo: rightContainer.widthAnchor),
             separator.heightAnchor.constraint(equalToConstant: Constant.separatorHeight)
         ])
+        
+        [topTitleLabel, titleLabel, subtitleLabel, dateLabel].forEach { $0.alpha = 0 }
+        [contentImageView].forEach { $0.transform = .init(scaleX: 0, y: 0) }
     }
     
     override func prepareForReuse() {
-        super.prepareForReuse()        
+        super.prepareForReuse()
+        shouldAnimate = false
         viewModel?.imageState.valueChanged = nil
         viewModel = nil
         contentImageView.image = nil
     }
     
-    func style(topTitleColor: UIColor,
-               topTitleFont: UIFont,
-               titleColor: UIColor,
-               titleFont: UIFont,
-               subtitleColor: UIColor,
-               subtitleFont: UIFont,
-               dateColor: UIColor,
-               dateFont: UIFont,
-               separatorColor: UIColor) {
+    func animate(with delay: TimeInterval) {
+        guard shouldAnimate else { return }
+        let duration = 0.2
+        topTitleLabel.animate([.changeAlpha(duration: duration, delay: delay + 0.1, alpha: 1.0)])
+        titleLabel.animate([.changeAlpha(duration: duration, delay: delay + 0.2, alpha: 1.0)])
+        subtitleLabel.animate([.changeAlpha(duration: duration, delay: delay + 0.3, alpha: 1.0)])
+        dateLabel.animate([.changeAlpha(duration: duration, delay: delay + 0.4, alpha: 1.0)])
+        contentImageView.animate([.scale(duration: duration, delay: delay, scale: 1.0)])
+    }
+    
+    func style(topTitleColor: UIColor = Theme.color.contentCellTopTitleColor,
+               topTitleFont: UIFont = Theme.font.contentCellTopTitleFont,
+               titleColor: UIColor = Theme.color.contentCellTitleColor,
+               titleFont: UIFont = Theme.font.contentCellTitleFont,
+               subtitleColor: UIColor = Theme.color.contentCellSubtitleColor,
+               subtitleFont: UIFont = Theme.font.contentCellSubtitleFont,
+               dateColor: UIColor = Theme.color.contentCellDateColor,
+               dateFont: UIFont = Theme.font.contentCellDateFont,
+               separatorColor: UIColor = Theme.color.contentCellSeparator) {
         topTitleLabel.textColor = topTitleColor
         topTitleLabel.font = topTitleFont
         

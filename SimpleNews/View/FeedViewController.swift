@@ -96,6 +96,9 @@ extension FeedViewController: UICollectionViewDataSource {
         let cell: ContentCell = collectionView.dequeueReuseableCell(indexPath: indexPath)
         if let cellViewModel = viewModel.cellViewModel(at: indexPath.row) {
             cell.configure(with: cellViewModel)
+            cell.style()
+            
+            cell.animate(with: Double(indexPath.row) * 0.3)
             viewModel.requestDataForCellIfNeeded(at: indexPath.row)
         }
         return cell
@@ -116,6 +119,7 @@ extension FeedViewController: UICollectionViewDelegateFlowLayout {
         guard let cellViewModel = viewModel.cellViewModel(at: indexPath.row) else { return .zero }
         
         tempCell.configure(with: cellViewModel)
+        tempCell.style()
         let size = tempCell.systemLayoutSizeFitting(CGSize(width: collectionView.bounds.width, height: 1),
                                                     withHorizontalFittingPriority: .required,
                                                     verticalFittingPriority: .fittingSizeLevel)

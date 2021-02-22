@@ -1,174 +1,55 @@
+# News Reader
 
+<img src="screenshot/article-list.png" width="800"/>
+<img src="screenshot/article-detail.png" width="800"/>
 
+## Requirement
 
-## Task
+Develop an news app, which call Restful API.
 
+## Some important notes
+- Not blocking user interaction when calling API requests.
+- Caching images after loading from URL to reuse later.
+- User scroll on collection view fast. Possibly the imaged loaded from previous view model, display on the cell which does not have the same view model, and causes incorrect data display on that cell.
 
+## Solution
+### Run non-UI specific tasks in background thread
+`QueueManager` is the class used to managed operations, which run on background threads. In this class, its property `OperationQueue` will manage to run the operations in multiple threads. We can also configure `QueueManager` to run how many concurrent tasks.
 
+Apart from `QueueManager`, we have `BaseOperation` class. This is the base class to define how an operation is executed, and when it is finished based on the `State`. Normally, a basic operation will finish when function `main` is finished. However, using this approach, when a URL operation executes, the `main` function will finish before the URL request returns response. Therefore, we need to define our own `State` to manually define the case when operation finish executing.
 
+Therefore, when we subclass `BaseOperation` and override the function `main`, we need to call `copmlete` function, to tell the `QueueManager` that this operation is finished, so the `QueueManager` can execute other operations.
 
-The included API endpoint returns, amongst other data, an array of news stories (assets).
+To run other tasks after the operations finish (like updating the UI, or view model), `BaseOperation` has `completionHandler` return the `Result` of that operation.
 
+### Caching images
+When fetching images from URL, we use `CacheImageOperation`. The instance of this class will fetch images from URL and store these images into physical files system (Caches/Download folder)
 
-You are tasked with creating an iPhone app that consumes the provided API and displays a list of news articles to the user, ideally in a TableView or CollectionView. Tapping a story should present the asset’s URL in a WKWebView or an alternate.
+The operation caches images based on the hashed name of the image, and save image with that name in the file system. Using this approach, when user restart the application and make the URL request. If the names of the images are the same with previous session, it will load the cached images instead of making other URL calls.
 
+### Cancel caching image operation
+When user scroll the collection view super fast, the app will create multiple `CacheImageOperation` to download images for cells. Because the cells are reused, so the reused cell still keeps the previous reference viewModel of downloading image. This will cause the issue that the cell will display incorrect image of other viewModel.
 
+To fix this issue, in the `prepareForReuse` function of `ContentCell`, we need to clear the reference between the current cell and previous viewModel.
 
+Also, the caching image operation of the previous viewModel is not needed, because user have scrolled through that cell. Therefore, we need to `stopRequestDataForCell` in viewModel, so we can cancel caching image operation for cells which are no longer showed on screen.
 
+## Architecture:
 
-## Requirements
+The architecture of the application is MVVM. UI is built by code using auto layout.
 
+<img src="screenshot/diagram.png" width="800"/>
 
+## Third parties dependency:
 
+The application does not include third parties library. It can be run immediately using XCode 10
 
+## Testing
 
-* The list of articles should display at least the following fields:
+### Unit testing
+I wrote unit tests to cover the logic of service, viewModel, etc.
 
+Test coverage: over 80%
 
--- headline
-
-
--- theAbstract
-
-
--- byLine
-
-
-
-
-
-* Display the latest article first in the list, use article's 'timeStamp'
-
-
-
-
-
-* If an 'asset' has 'relatedImages', display the smallest image available as a thumbnail on the cell
-
-
-* Images should be loaded asynchronously and cached
-
-
-
-
-
-* The style of cells is up to you, with necessary padding and layout.
-
-
-* For UI use storyboards, xibs or layout programmatically as needed, but it should adapt to all iPhone screen sizes
-
-
-
-
-
-* Comment your code, so it's understandable in six months
-
-
-
-
-
-* Make sure to include Unit tests as part of the solution - we thoroughly review unit tests and coverage!
-
-
-
-
-
-* Use Xcode 10.x (stable) with Swift 5, please specify code compilation notes in your submission.
-
-
-
-
-
-Please feel free to ask if you have any questions interpreting this document!
-
-
-
-### Bonus
-
-
-
-* Using CollectionView implementation instead TableView for the list of articles
-
-
-
-* Some UI tests to verify UI is functional and/or cover some important user flow
-
-
-
-
-
-
-## Submission Notes
-
-
-
-
-
-* Code Compilation instructions for the IDE/Plugin expected, dependency management, etc
-
-
-* Short description explaining architecture (e.g View, ViewModel...)
-
-
-* Any 3rd party libraries used and rational
-
-
-* Explain what each test does in comments or in a document format
-
-
-* Explain any additional features covered - apart the requirements given above
-
-
-
-
-
-* Please either share your repository (public repo preferred) or use a service like Dropbox to share the file.
-
-
-
-
-
-## How we evaluate
-
-
-
-
-
-We want you to succeed! We aim to evaluate each submission with the same criteria, they are:
-
-
-
-
-
- * *requirements* you've build the right product, attention to details!
-
-
- * *code architecture* appropriate design patterns used (MVVM, MVP ...) - we use MVVM in-house
-
- * *code style* idiomatic, safe, clean, concise.
-
-
- * *unit tests* coverage, stable, reliable, maintainable, mocked where required
-
-
- * *user experience* responsive, user-centric design.
-
-
-
-
-
-
-
-
-## Resources
-
-
-
-
-
-API Endpoint:
-
-
-https://bruce-v2-mob.fairfaxmedia.com.au/1/coding_test/13ZZQX/full
-
-
+### UI testing:
+UI testing cover the scenario of loading the data in `FeedViewController`, and navigation from first view to `WebViewController`.

@@ -9,9 +9,10 @@ import UIKit
 import WebKit
 
 final class WebViewController: UIViewController {
+    private let loadingView = LoadingView()
     private let webView = WKWebView()
     private var url: URL?
-    
+    private var firstLoad = true
     
     init(urlString: String) {
         super.init(nibName: nil, bundle: nil)
@@ -43,5 +44,15 @@ final class WebViewController: UIViewController {
 }
 
 extension WebViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        if firstLoad {
+            loadingView.showLoading(on: webView)
+        }
+    }
     
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        loadingView.hideLoading()
+        firstLoad = false
+    }
 }
+
