@@ -24,7 +24,7 @@ class NewsServiceTests: XCTestCase {
      */
     func testRequestDataSuccess() {
         session.data = StubData.loadStubData(fileName: "home", ext: "json")
-        let service = NewsService(queueManager: QueueManager.shared,
+        let service = NewsService(queueManager: queueManager,
                                   session: session)
         
         let expectation = self.expectation(description: "Receive valid JSON")
@@ -46,7 +46,7 @@ class NewsServiceTests: XCTestCase {
      */
     func testRequestDataFail() {
         session.data = StubData.loadStubData(fileName: "home-invalid", ext: "json")
-        let service = NewsService(queueManager: QueueManager.shared,
+        let service = NewsService(queueManager: queueManager,
                                   session: session)
         
         let expectation = self.expectation(description: "Receive invalid JSON")

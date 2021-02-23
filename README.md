@@ -36,9 +36,11 @@ Also, the caching image operation of the previous viewModel is not needed, becau
 
 ## Architecture:
 
-The architecture of the application is MVVM. UI is built by code using auto layout.
+The architecture of the application is MVVM. UI is built by code using auto layout. I also follow SOLID principles.
 
 <img src="screenshot/diagram.png" width="800"/>
+
+There are 2 scheme to run the app. `SimpleNews` scheme is to run with real API, `SimpleNews (Mock)` scheme is to run against local mock json files (which is easier to test in the scenario does not have internet connection, or API is not ready)
 
 ## Third parties dependency:
 
@@ -53,3 +55,13 @@ Test coverage: over 80%
 
 ### UI testing:
 UI testing cover the scenario of loading the data in `FeedViewController`, and navigation from first view to `WebViewController`.
+
+
+## Coding style
+
+I follow Ray Wenderlich coding style (https://github.com/raywenderlich/swift-style-guide), also use SwiftLint to auto correct my code
+
+
+## Additional features
+- Animation
+- Testing against mock service

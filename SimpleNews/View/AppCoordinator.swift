@@ -11,7 +11,11 @@ class AppCoordinator {
     var initialViewController: UIViewController
     
     init() {
+        #if MOCK
+        let service = ServiceFactory.webService(with: .mock)
+        #else
         let service = ServiceFactory.webService(with: .api)
+        #endif
         
         let viewController = FeedViewController(viewModel: FeedViewModel(service: service, imageService: ImageService()))
         let navigationController = UINavigationController(rootViewController: viewController)

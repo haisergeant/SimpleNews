@@ -127,6 +127,11 @@ final class ContentCell: UICollectionViewCell, Reuseable, ViewConfigurable {
         contentImageView.animate([.scale(duration: duration, delay: delay, scale: 1.0)])
     }
     
+    func resetAnimation() {
+        [topTitleLabel, titleLabel, subtitleLabel, dateLabel].forEach { $0.alpha = 1 }
+        [contentImageView].forEach { $0.transform = .identity }
+    }
+    
     func style(topTitleColor: UIColor = Theme.color.contentCellTopTitleColor,
                topTitleFont: UIFont = Theme.font.contentCellTopTitleFont,
                titleColor: UIColor = Theme.color.contentCellTitleColor,

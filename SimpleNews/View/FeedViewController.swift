@@ -40,6 +40,7 @@ final class FeedViewController: UIViewController {
     
     private let viewModel: FeedViewModelProtocol
     weak var delegate: FeedViewControllerDelegate?
+    private var shouldAnimate = true
     
     private lazy var tempCell = ContentCell()
     
@@ -99,7 +100,11 @@ extension FeedViewController: UICollectionViewDataSource {
             cell.configure(with: cellViewModel)
             cell.style()
             
-            cell.animate(with: Double(indexPath.row) * 0.3)
+            if shouldAnimate {
+                cell.animate(with: Double(indexPath.row) * 0.3)
+            } else {
+                cell.resetAnimation()
+            }
             viewModel.requestDataForCellIfNeeded(at: indexPath.row)
         }
         return cell
@@ -133,6 +138,10 @@ extension FeedViewController: FeedViewProtocol {
     func configure(with viewModel: BaseViewModelProtocol) {
         collectionView.refreshControl?.endRefreshing()
         collectionView.reloadData()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.shouldAnimate = false        
+        }
     }
     
     func handleError(_ error: Error) {

@@ -48,10 +48,12 @@ final class JSONDataRequestOperation<Element: Decodable>: BaseOperation<Element>
             return
         }
         
+        #if !MOCK
         guard Reachability.isConnectedToNetwork() else {
             complete(result: .failure(APIError.noInternetConnection))
             return
         }
+        #endif
         
         dataTask = urlSession.dataTask(with: urlRequest as URLRequest) { [weak self] (data, response, error) in
             guard let self = self else { return }
