@@ -21,7 +21,7 @@ struct LocalMockEndpoints {
     }
     
     private func fileUrl(_ fileName: String) -> URL? {
-        Bundle(identifier: "com.haile.SimpleNewsTests")?.url(forResource: fileName, withExtension: nil)
+        Bundle(identifier: "com.haile.SimpleNews")?.url(forResource: fileName, withExtension: nil)
     }
 }
 

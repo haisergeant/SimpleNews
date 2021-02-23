@@ -19,6 +19,9 @@ class NewsServiceTests: XCTestCase {
         session.error = nil
     }
     
+    /**
+     Test request data success, with data coming from stub home.json
+     */
     func testRequestDataSuccess() {
         session.data = StubData.loadStubData(fileName: "home", ext: "json")
         let service = NewsService(queueManager: QueueManager.shared,
@@ -38,6 +41,9 @@ class NewsServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
     }
     
+    /**
+     Test request data fail because of json format error, with data coming from stub home-invalid.json
+     */
     func testRequestDataFail() {
         session.data = StubData.loadStubData(fileName: "home-invalid", ext: "json")
         let service = NewsService(queueManager: QueueManager.shared,

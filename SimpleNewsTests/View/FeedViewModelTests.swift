@@ -51,6 +51,9 @@ class FeedViewModelTests: XCTestCase {
         
     }
     
+    /**
+     Fetch data from stub file home.json success
+     */
     func testViewModelFetchDataSuccess() {
         session.data = StubData.loadStubData(fileName: "home", ext: "json")
         
@@ -64,6 +67,9 @@ class FeedViewModelTests: XCTestCase {
         waitForExpectations(timeout: 5, handler: nil)
     }
     
+    /**
+     Test viewModel request data but has API error
+     */
     func testViewModelFetchDataFail() {
         session.error = APIError.invalidAPIError
         

@@ -18,7 +18,6 @@
 		E850C0F525E263E400EE1C14 /* FeedViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850C0EB25E263E300EE1C14 /* FeedViewModelTests.swift */; };
 		E850C10225E267F600EE1C14 /* NewsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850C0E925E263E300EE1C14 /* NewsServiceTests.swift */; };
 		E850C11825E27B5C00EE1C14 /* StubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850C11725E27B5C00EE1C14 /* StubData.swift */; };
-		E850C11C25E27B6800EE1C14 /* StubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E850C11725E27B5C00EE1C14 /* StubData.swift */; };
 		E850C12725E2840900EE1C14 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = E8DED1EB25DE879100C445E4 /* home.json */; };
 		E850C12B25E284AB00EE1C14 /* home-invalid.json in Resources */ = {isa = PBXBuildFile; fileRef = E850C10625E26BB600EE1C14 /* home-invalid.json */; };
 		E856584B25E38A150010D810 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E856584A25E38A150010D810 /* Theme.swift */; };
@@ -509,7 +508,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8DED1F925DE9C2300C445E4 /* FeedViewModel.swift in Sources */,
-				E850C11C25E27B6800EE1C14 /* StubData.swift in Sources */,
 				E8DED1BF25DE3B0E00C445E4 /* URLSessionProtocol.swift in Sources */,
 				E8DED1B525DE3B0E00C445E4 /* APIConstants.swift in Sources */,
 				E8DED1AA25DE3B0E00C445E4 /* FileManager+Extension.swift in Sources */,

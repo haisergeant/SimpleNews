@@ -2,7 +2,6 @@
 //  JSONDataRequestOperationTests.swift
 //
 //  Created by Hai Le Thanh.
-//  Copyright © 2020 Hai Le Thanh. All rights reserved.
 //
 
 import XCTest
@@ -24,7 +23,8 @@ class JSONDataRequestOperationTests: XCTestCase {
         let session = MockURLSession()
         session.data = StubData.loadStubData(fileName: "home", ext: "json")
         
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://bruce-v2-mob.fairfaxmedia.com.au/1/coding_test/13ZZQX/full"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API which returns correct format")
         let operation = JSONDataRequestOperation<Feed>(url: url,
@@ -35,7 +35,7 @@ class JSONDataRequestOperationTests: XCTestCase {
         operation.completionHandler = { result in
             XCTAssertTrue(operation.isFinished, "Operation must be finished")
 
-            XCTAssert(session.lastURLRequest?.url?.absoluteString == "www.google.com", "URL should be www.google.com")
+            XCTAssert(session.lastURLRequest?.url?.absoluteString == urlString, "URL should be \(urlString)")
             XCTAssert(session.nextDataTask.resumeWasCalled, "Data task should be called")
             
             if case .success(let feed) = result {
@@ -55,8 +55,8 @@ class JSONDataRequestOperationTests: XCTestCase {
     func testAPIRequestReturnError() {
         let session = MockURLSession()
         session.error = APIError.invalidAPIError
-        
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://bruce-v2-mob.fairfaxmedia.com.au/1/coding_test/13ZZQX/full"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API which returns error")
         let operation = JSONDataRequestOperation<Feed>(url: url,
@@ -66,7 +66,7 @@ class JSONDataRequestOperationTests: XCTestCase {
                                                                    dateFormatter: dateFormatter)
         operation.completionHandler = { result in
             XCTAssertTrue(operation.isFinished, "Operation must be finished")
-            XCTAssert(session.lastURLRequest?.url?.absoluteString == "www.google.com", "URL should be www.google.com")
+            XCTAssert(session.lastURLRequest?.url?.absoluteString == urlString, "URL should be \(urlString)")
             XCTAssert(session.nextDataTask.resumeWasCalled, "Data task should be called")
             
             if case .success = result {
@@ -87,8 +87,8 @@ class JSONDataRequestOperationTests: XCTestCase {
     func testAPIRequestReturnInvalidFormat() {
         let session = MockURLSession()
         session.data = StubData.loadStubData(fileName: "home-invalid", ext: "json")
-        
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://bruce-v2-mob.fairfaxmedia.com.au/1/coding_test/13ZZQX/full"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API which returns invalid format")
         let operation = JSONDataRequestOperation<Feed>(url: url,
@@ -98,7 +98,7 @@ class JSONDataRequestOperationTests: XCTestCase {
                                                                    dateFormatter: dateFormatter)
         operation.completionHandler = { result in
             XCTAssertTrue(operation.isFinished, "Operation must be finished")
-            XCTAssert(session.lastURLRequest?.url?.absoluteString == "www.google.com", "URL should be www.google.com")
+            XCTAssert(session.lastURLRequest?.url?.absoluteString == urlString, "URL should be \(urlString)")
             XCTAssert(session.nextDataTask.resumeWasCalled, "Data task should be called")
             
             if case .success = result {
@@ -118,8 +118,8 @@ class JSONDataRequestOperationTests: XCTestCase {
     func testAPIRequestIntArray() {
         let session = MockURLSession()
         session.data = "[1,2,3,4,5]".data(using: .ascii)
-        
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://bruce-v2-mob.fairfaxmedia.com.au/1/coding_test/13ZZQX/full"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API which returns Int array")
         let operation = JSONDataRequestOperation<[Int]>(url: url,

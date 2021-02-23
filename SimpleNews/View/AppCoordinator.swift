@@ -12,6 +12,7 @@ class AppCoordinator {
     
     init() {
         let service = ServiceFactory.webService(with: .api)
+        
         let viewController = FeedViewController(viewModel: FeedViewModel(service: service, imageService: ImageService()))
         let navigationController = UINavigationController(rootViewController: viewController)
         self.initialViewController = navigationController

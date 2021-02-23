@@ -2,7 +2,6 @@
 //  CacheImageOperationTests.swift
 //
 //  Created by Hai Le Thanh.
-//  Copyright © 2020 Hai Le Thanh. All rights reserved.
 //
 
 import XCTest
@@ -23,6 +22,9 @@ class CacheImageOperationTests: XCTestCase {
         try? FileManager.default.removeItem(atPath: downloadFolder)
     }
 
+    /**
+     Test download image successfully from URL (using MockURLSession)
+     */
     func testImageDownloadSuccess() {
         let session = MockURLSession()
         let bundle = Bundle(for: CacheImageOperationTests.self)
@@ -31,7 +33,8 @@ class CacheImageOperationTests: XCTestCase {
         session.data = imageData
         
         let fileManager = MockFileManager(fileExist: false)
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://www.fairfaxstatic.com.au/content/dam/images/h/1/c/r/m/h/image.imgtype.afrWoodcutAuthorImage.140x140.png/1553477420914.png"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API which returns image")
         let operation = CacheImageOperation(url: url,
@@ -39,7 +42,7 @@ class CacheImageOperationTests: XCTestCase {
                                             fileManager: fileManager)
         operation.completionHandler = { result in
             XCTAssertTrue(operation.isFinished, "Operation must be finished")
-            XCTAssert(session.lastURLRequest?.url?.absoluteString == "www.google.com", "URL should be www.google.com")
+            XCTAssert(session.lastURLRequest?.url?.absoluteString == urlString, "URL should be \(urlString)")
             XCTAssert(session.nextDataTask.resumeWasCalled, "Data task should be called")
             
             if case .success(let image) = result {
@@ -55,18 +58,22 @@ class CacheImageOperationTests: XCTestCase {
         waitForExpectations(timeout: 10.0, handler: nil)
     }
     
+    /**
+     Test download image fail because invalid image link
+     */
     func testImageDownloadFail() {
         let session = MockURLSession()
         session.error = APIError.invalidImageLink
         
         let fileManager = MockFileManager(fileExist: false)
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://www.fairfaxstatic.com.au/content/dam/images/h/1/c/r/m/h/image.imgtype.afrWoodcutAuthorImage.140x140.png/1553477420914.png"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Calling API returns error")
         let operation = CacheImageOperation(url: url, urlSession: session, fileManager: fileManager)
         operation.completionHandler = { result in
             XCTAssertTrue(operation.isFinished, "Operation must be finished")
-            XCTAssert(session.lastURLRequest?.url?.absoluteString == "www.google.com", "URL should be www.google.com")
+            XCTAssert(session.lastURLRequest?.url?.absoluteString == urlString, "URL should be \(urlString)")
             XCTAssert(session.nextDataTask.resumeWasCalled, "Data task should be called")
             
             if case .success = result {
@@ -82,11 +89,15 @@ class CacheImageOperationTests: XCTestCase {
         waitForExpectations(timeout: 10.0, handler: nil)
     }
     
+    /**
+     Test retrieve image from cached file system fail
+     */
     func testImageGetFromFileSystemFail() {
         let session = MockURLSession()
         
         let fileManager = MockFileManager(fileExist: true)
-        let url = URL(string: "www.google.com")!
+        let urlString = "https://www.fairfaxstatic.com.au/content/dam/images/h/1/c/r/m/h/image.imgtype.afrWoodcutAuthorImage.140x140.png/1553477420914.png"
+        let url = URL(string: urlString)!
         
         let expectation = self.expectation(description: "Get image from file system but fail")
         let operation = CacheImageOperation(url: url, urlSession: session, fileManager: fileManager)
@@ -108,17 +119,21 @@ class CacheImageOperationTests: XCTestCase {
         waitForExpectations(timeout: 10.0, handler: nil)
     }
     
+    /**
+     Test retrieve image from cached file system success
+     */
     func testImageGetFromFileSystemSuccess() {
         // create the image file in file system
         let bundle = Bundle(for: CacheImageOperationTests.self)
         let imageData = UIImage(named: "tick", in: bundle, compatibleWith: nil)!.pngData()!
-        let url = URL(string: "www.google.com/tick.png")!
+        let urlString = "https://www.fairfaxstatic.com.au/content/dam/images/h/1/c/r/m/h/image.imgtype.afrWoodcutAuthorImage.140x140.png/tick.png"
+        let url = URL(string: urlString)!
         let cacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory,
                                                                  .userDomainMask,
                                                                  true).first!
         let downloadFolder = cacheDirectory + "/" + "Download"
         
-        let filePath = downloadFolder + "/" + FileNameHelper.fileName(for: "www.google.com/tick.png")!
+        let filePath = downloadFolder + "/" + FileNameHelper.fileName(for: urlString)!
         do {
             try FileManager.default.createDirectory(atPath: downloadFolder,
                                                     withIntermediateDirectories: true,

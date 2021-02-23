@@ -18,6 +18,9 @@ enum APIError: Error, Equatable {
     case jsonFormatError
 }
 
+/**
+ Define the error message.
+ */
 extension APIError: ErrorDisplayable {
     var errorMessage: String {
         switch self {

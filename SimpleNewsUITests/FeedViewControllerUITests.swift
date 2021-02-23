@@ -11,8 +11,11 @@ import XCTest
 class FeedViewControllerUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
-}
+    }
 
+    /**
+     Test navigation from first screen to webViewController, and going back to first screen
+     */
     func testCollectionViewLoadData() throws {
         let app = XCUIApplication()
         app.launch()
@@ -22,6 +25,9 @@ class FeedViewControllerUITests: XCTestCase {
         waitForExpectations(timeout: 5, handler: nil)
     }
 
+    /**
+     Test navigation from first screen to webViewController, and going back to first screen
+     */
     func testNavigation() throws {
         let app = XCUIApplication()
         app.launch()

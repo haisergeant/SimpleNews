@@ -48,7 +48,6 @@ final class FeedViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         viewModel.bind(to: self)
-        refreshData(forceLoad: true)
     }
     
     required init?(coder: NSCoder) {
@@ -62,8 +61,8 @@ final class FeedViewController: UIViewController {
         collectionView.disableTranslatesAutoResizing()
         
         NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
@@ -71,6 +70,8 @@ final class FeedViewController: UIViewController {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(pullRefreshData), for: .valueChanged)
         collectionView.refreshControl = refreshControl
+        
+        refreshData(forceLoad: true)
     }
     
     @objc private func pullRefreshData() {

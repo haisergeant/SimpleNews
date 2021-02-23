@@ -17,6 +17,9 @@ class CachServiceTests: XCTestCase {
         cacheService.clearCache()
     }
 
+    /**
+     Cache the value and access it within time interval
+     */
     func testCacheSmallData() {
         cacheService.cache(value: 5,
                            for: "key",
@@ -30,6 +33,9 @@ class CachServiceTests: XCTestCase {
         waitForExpectations(timeout: 5, handler: nil)
     }
     
+    /**
+     Cache the value and access it out of time interval, should return nil
+     */
     func testCacheSmallDataAndTryToAccessAfterInterval() {
         cacheService.cache(value: 5,
                            for: "key",
