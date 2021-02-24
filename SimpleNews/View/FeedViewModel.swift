@@ -13,7 +13,6 @@ protocol FeedViewModelProtocol: BaseViewModelProtocol {
     func cellViewModel(at index: Int) -> BaseViewModel?
     func requestDataForCellIfNeeded(at index: Int)
     func stopRequestDataForCell(at index: Int)
-    func clearDataForCell(at index: Int)
 }
 
 class FeedViewModel {
@@ -113,9 +112,5 @@ extension FeedViewModel: FeedViewModelProtocol {
               let object = imageObject,
               let url = URL(string: object.url) else { return }
         imageService.cancelDownloadImage(at: url)
-    }
-    
-    func clearDataForCell(at index: Int) {
-        
     }
 }
